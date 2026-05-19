@@ -4,389 +4,176 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stallion — Rastreamento de Pedidos</title>
+
+  <!-- PWA: permite instalar como app no celular -->
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#0f0f1e" />
+  <meta name="theme-color" content="#111111" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Stallion" />
+
+  <!-- Fontes do Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Estilos visuais do site -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Biblioteca do banco de dados Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --dark: #0f0f1e; --dark2: #1a1a2e; --dark3: #22223a; --gold: #e8c84a;
-      --white: #ffffff; --gray1: #f4f4f6; --gray2: #e8e8ee; --gray3: #c0c0cc; --gray4: #888899;
-      --text: #1a1a2e; --text-muted: #666677;
-      --success: #1b8a4e; --success-bg: #d4f0e0;
-      --info: #1565c0; --info-bg: #ddeeff;
-      --warn: #b45309; --warn-bg: #fef3cd;
-      --radius: 10px; --radius-sm: 6px;
-    }
-    body { font-family: 'Barlow', sans-serif; background: var(--gray1); color: var(--text); min-height: 100vh; }
-
-    header { background: var(--dark); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(232,200,74,0.15); }
-    .logo { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 700; color: var(--gold); letter-spacing: 2px; }
-    .logo-sub { font-size: 11px; color: #888; font-weight: 400; letter-spacing: 0.5px; margin-left: 2px; }
-
-    .tab-bar { background: var(--dark2); display: flex; border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .tab { padding: 14px 24px; font-size: 13px; font-weight: 500; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: color 0.2s, border-color 0.2s; display: flex; align-items: center; gap: 7px; user-select: none; }
-    .tab:hover { color: #bbb; }
-    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-    .tab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
-    .section { display: none; padding: 32px 24px; max-width: 680px; margin: 0 auto; }
-    .section.active { display: block; }
-
-    .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray2); padding: 24px; }
-    .card-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-    .card-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
-
-    input, select { width: 100%; padding: 10px 14px; border: 1px solid var(--gray2); border-radius: var(--radius-sm); font-size: 14px; font-family: 'Barlow', sans-serif; background: var(--gray1); color: var(--text); transition: border-color 0.2s; }
-    input:focus, select:focus { outline: none; border-color: var(--gold); background: #fff; }
-    input::placeholder { color: var(--gray3); }
-    label { font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px; }
-    .field { margin-bottom: 14px; }
-
-    .btn { padding: 11px 20px; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: 'Barlow', sans-serif; cursor: pointer; transition: background 0.2s, transform 0.1s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn:active { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-dark { background: var(--dark2); color: var(--gold); }
-    .btn-dark:hover:not(:disabled) { background: var(--dark3); }
-    .btn-full { width: 100%; justify-content: center; }
-    .btn-sm { padding: 7px 14px; font-size: 13px; }
-    .btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-
-    .input-row { display: flex; gap: 8px; }
-    .input-row input { flex: 1; }
-
-    .error-msg { font-size: 13px; color: #c0392b; margin-top: 10px; display: none; padding: 8px 12px; background: #fdecea; border-radius: var(--radius-sm); border-left: 3px solid #c0392b; }
-    .info-box { background: var(--info-bg); border-left: 3px solid #90caf9; border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; color: var(--info); margin-top: 16px; }
-    .info-box strong { display: block; margin-bottom: 4px; }
-
-    .loading { text-align: center; padding: 32px; color: var(--text-muted); font-size: 14px; }
-    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--gray2); border-top-color: var(--dark2); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .result-card { margin-top: 16px; }
-    .order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .order-id-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
-    .order-id-value { font-size: 20px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; color: var(--dark); }
-    .order-client { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
-
-    .badge { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
-    .badge-0 { background: var(--warn-bg); color: var(--warn); }
-    .badge-1 { background: var(--info-bg); color: var(--info); }
-    .badge-2 { background: #e8f4fe; color: #1565c0; }
-    .badge-3 { background: var(--success-bg); color: var(--success); }
-
-    .timeline { border-top: 1px solid var(--gray2); padding-top: 20px; }
-    .tl-item { display: flex; gap: 14px; padding-bottom: 20px; }
-    .tl-item:last-child { padding-bottom: 0; }
-    .tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-    .tl-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .tl-dot svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-    .tl-dot.done { background: var(--dark2); color: var(--gold); }
-    .tl-dot.current { background: var(--gold); color: var(--dark); }
-    .tl-dot.pending { background: var(--gray2); color: var(--gray4); }
-    .tl-line { width: 2px; flex: 1; min-height: 14px; background: var(--gray2); margin-top: 5px; }
-    .tl-line.done { background: var(--dark2); }
-    .tl-content { padding-top: 6px; }
-    .tl-label { font-size: 14px; font-weight: 600; color: var(--text); }
-    .tl-label.pending { font-weight: 400; color: var(--gray4); }
-    .tl-time { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
-
-    .panel-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .panel-title { font-size: 18px; font-weight: 700; color: var(--text); }
-    .setor-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; background: var(--dark2); color: var(--gold); border-radius: 20px; margin-top: 4px; display: inline-block; }
-    .btn-logout { background: none; border: 1px solid var(--gray2); border-radius: var(--radius-sm); padding: 7px 14px; font-size: 13px; font-family: 'Barlow', sans-serif; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 6px; }
-    .btn-logout:hover { background: var(--gray1); }
-    .btn-logout svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
-    .new-order-row { display: flex; gap: 8px; margin-bottom: 20px; }
-    .new-order-row input { flex: 1; }
-    .orders-list { display: flex; flex-direction: column; gap: 10px; }
-    .order-row { background: var(--white); border: 1px solid var(--gray2); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .order-info strong { font-size: 14px; font-weight: 600; color: var(--text); display: block; }
-    .order-info span { font-size: 12px; color: var(--text-muted); }
-    .order-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .step-select { width: auto; padding: 7px 10px; font-size: 13px; }
-    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; }
-
-    @media (max-width: 480px) {
-      .section { padding: 20px 14px; }
-      .order-row { flex-direction: column; align-items: flex-start; }
-      .order-actions { width: 100%; }
-      .step-select { flex: 1; }
-    }
-  </style>
 </head>
 <body>
 
-<header>
-  <div>
-    <span class="logo">STALLION</span>
-    <span class="logo-sub">Peças para Carros &amp; Motos</span>
-  </div>
-  <div class="header-right" id="header-info">Sistema de Pedidos</div>
-</header>
+  <!-- ========== CABEÇALHO ========== -->
+  <header>
+    <div class="logo-area">
+      <!-- Logo cavalo em SVG (sem precisar de imagem externa) -->
+      <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#c0392b" d="M72,10 C65,8 58,12 54,18 C50,14 44,11 37,13 C28,15 22,23 24,32 C18,34 14,40 16,47 C10,50 8,57 12,63 C8,68 9,76 15,79 C14,85 18,91 25,92 C24,98 30,102 36,100 C40,106 48,107 53,103 C58,107 66,106 70,100 C76,102 82,98 81,92 C88,91 92,85 91,79 C97,76 98,68 94,63 C98,57 96,50 90,47 C92,40 88,34 82,32 C84,23 78,15 72,10 Z"/>
+        <path fill="#111" d="M50,25 C44,25 39,29 37,35 L35,45 C33,50 35,56 40,59 L40,75 C40,77 42,79 44,79 L56,79 C58,79 60,77 60,75 L60,59 C65,56 67,50 65,45 L63,35 C61,29 56,25 50,25 Z"/>
+        <circle fill="#fff" cx="44" cy="36" r="3"/>
+        <path fill="#c0392b" d="M38,30 C36,27 32,26 30,28 C32,30 34,33 36,34 Z"/>
+      </svg>
 
-<div class="tab-bar">
-  <div class="tab active" id="tab-btn-cliente" onclick="showTab('cliente')">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    Rastrear pedido
-  </div>
-  <div class="tab" id="tab-btn-painel" onclick="showTab('painel')">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-    Painel interno
-  </div>
-</div>
-
-<!-- CLIENTE -->
-<div id="tab-cliente" class="section active">
-  <div class="card">
-    <div class="card-title">Acompanhe seu pedido</div>
-    <div class="card-sub">Digite o ID do pedido recebido no momento da compra.</div>
-    <div class="input-row">
-      <input type="text" id="search-input" placeholder="Ex: STL-00000001" onkeydown="if(event.key==='Enter') buscarPedido()" />
-      <button class="btn btn-dark" onclick="buscarPedido()" id="btn-buscar">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        Buscar
-      </button>
+      <div class="logo-text">
+        <span class="logo-name">STALLION</span>
+        <span class="logo-sub">Moto Peças</span>
+      </div>
     </div>
-    <div id="search-err" class="error-msg">Pedido não encontrado. Verifique o ID e tente novamente.</div>
-  </div>
-  <div id="result-area"></div>
-</div>
 
-<!-- PAINEL -->
-<div id="tab-painel" class="section">
-  <div id="login-area">
-    <div class="card" style="max-width:380px;margin:0 auto;">
-      <div class="card-title">Acesso interno</div>
-      <div class="card-sub">Selecione seu setor e insira a senha para continuar.</div>
-      <div class="field">
-        <label>Setor</label>
-        <select id="setor-select">
-          <option value="">Selecione o setor...</option>
-          <option value="financeiro">Financeiro</option>
-          <option value="estoque">Estoque</option>
-          <option value="expedicao">Expedição</option>
-          <option value="entrega">Entrega</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Senha</label>
-        <input type="password" id="senha-input" placeholder="Senha do setor" onkeydown="if(event.key==='Enter') fazerLogin()" />
-      </div>
-      <button class="btn btn-dark btn-full" onclick="fazerLogin()">
-        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        Entrar
-      </button>
-      <div id="login-err" class="error-msg">Setor ou senha incorretos. Tente novamente.</div>
-      <div class="info-box">
-        <strong>Senhas dos setores:</strong>
-        Financeiro: <code>fin123</code> &nbsp;|&nbsp; Estoque: <code>est123</code><br>
-        Expedição: <code>exp123</code> &nbsp;|&nbsp; Entrega: <code>ent123</code>
-      </div>
+    <div class="header-tag" id="header-info">Sistema de Pedidos</div>
+  </header>
+
+
+  <!-- ========== ABAS DE NAVEGAÇÃO ========== -->
+  <div class="tab-bar">
+    <!-- Aba visível para o cliente -->
+    <div class="tab active" id="tab-btn-cliente" onclick="showTab('cliente')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Rastrear Pedido
+    </div>
+
+    <!-- Aba restrita para funcionários -->
+    <div class="tab" id="tab-btn-painel" onclick="showTab('painel')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Painel Interno
     </div>
   </div>
 
-  <div id="painel-area" style="display:none;">
-    <div class="panel-top">
-      <div>
-        <div class="panel-title">Pedidos</div>
-        <div class="setor-badge" id="setor-nome"></div>
+
+  <!-- ========== ABA DO CLIENTE ========== -->
+  <div id="tab-cliente" class="section active">
+
+    <!-- Campo de busca -->
+    <div class="card">
+      <div class="card-eyebrow">Consulta de pedido</div>
+      <div class="card-title">Acompanhe sua compra</div>
+      <div class="card-sub">Digite o número do pedido recebido no momento da compra.</div>
+
+      <div class="input-row">
+        <input type="text" id="search-input" placeholder="Ex: STL-00000001" onkeydown="if(event.key==='Enter') buscarPedido()" />
+        <button class="btn btn-red" onclick="buscarPedido()" id="btn-buscar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          Buscar
+        </button>
       </div>
-      <button class="btn-logout" onclick="logout()">
-        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Sair
-      </button>
+
+      <div id="search-err" class="error-msg">
+        Pedido não encontrado. Verifique o número e tente novamente.
+      </div>
     </div>
-    <div class="new-order-row">
-      <input type="text" id="novo-cliente" placeholder="Nome do cliente para novo pedido" onkeydown="if(event.key==='Enter') criarPedido()" />
-      <button class="btn btn-dark" onclick="criarPedido()" id="btn-criar">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Novo pedido
-      </button>
-    </div>
-    <div id="orders-list" class="orders-list"></div>
+
+    <!-- Resultado da busca (preenchido pelo JavaScript) -->
+    <div id="result-area"></div>
+
   </div>
-</div>
 
-<script>
-  const SUPABASE_URL = 'https://eyfiinamaysiuzrelhfk.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_C6wTA6N1oSNICMapXKWQbw_iZK0Gn1y';
-  const { createClient } = supabase;
-  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const STEPS = [
-    { label: 'Pagamento confirmado', icon: 'credit' },
-    { label: 'Separação no estoque', icon: 'box' },
-    { label: 'Saiu para entrega',    icon: 'truck' },
-    { label: 'Entregue',             icon: 'check' }
-  ];
-  const SENHAS = { financeiro:'fin123', estoque:'est123', expedicao:'exp123', entrega:'ent123' };
-  const SETOR_NAMES = { financeiro:'Financeiro', estoque:'Estoque', expedicao:'Expedição', entrega:'Entrega' };
-  let currentSetor = null;
+  <!-- ========== ABA DO PAINEL INTERNO ========== -->
+  <div id="tab-painel" class="section">
 
-  function agora() {
-    const d = new Date();
-    return d.getDate().toString().padStart(2,'0') + '/' + (d.getMonth()+1).toString().padStart(2,'0') + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-  }
+    <!-- Tela de login (visível antes de entrar) -->
+    <div id="login-area">
+      <div class="card login-card">
+        <div class="card-eyebrow">Acesso restrito</div>
+        <div class="card-title">Painel Interno</div>
+        <div class="card-sub">Selecione seu setor e insira a senha para acessar o painel.</div>
 
-  async function gerarId() {
-    const { count } = await db.from('pedidos').select('*', { count: 'exact', head: true });
-    return 'STL-' + String((count || 0) + 1).padStart(8, '0');
-  }
-
-  function svgIcon(name) {
-    const icons = {
-      credit: '<path d="M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="1" y1="10" x2="23" y2="10"/>',
-      box: '<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>',
-      truck: '<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
-      check: '<polyline points="20 6 9 17 4 12"/>'
-    };
-    return `<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;">${icons[name]}</svg>`;
-  }
-
-  function showTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('tab-btn-' + tab).classList.add('active');
-    document.getElementById('tab-' + tab).classList.add('active');
-  }
-
-  async function buscarPedido() {
-    const val = document.getElementById('search-input').value.trim().toUpperCase();
-    const err = document.getElementById('search-err');
-    const area = document.getElementById('result-area');
-    const btn = document.getElementById('btn-buscar');
-    if (!val) return;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Buscando...';
-    area.innerHTML = '';
-    err.style.display = 'none';
-
-    const { data, error } = await db.from('pedidos').select('*').eq('id_pedido', val).single();
-    btn.disabled = false;
-    btn.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> Buscar`;
-
-    if (error || !data) { err.style.display = 'block'; return; }
-
-    const history = data.history || [];
-    let tl = '';
-    STEPS.forEach((s, i) => {
-      const isDone = i < data.step, isCurrent = i === data.step, isPending = i > data.step;
-      const hist = history.find(h => h.step === i);
-      tl += `<div class="tl-item">
-        <div class="tl-left">
-          <div class="tl-dot ${isDone?'done':isCurrent?'current':'pending'}">${svgIcon(s.icon)}</div>
-          ${i < STEPS.length-1 ? `<div class="tl-line ${isDone?'done':''}"></div>` : ''}
+        <div class="field">
+          <label>Setor</label>
+          <select id="setor-select">
+            <option value="">Selecione o setor...</option>
+            <option value="financeiro">Financeiro</option>
+            <option value="estoque">Estoque</option>
+            <option value="expedicao">Expedição</option>
+            <option value="entrega">Entrega</option>
+          </select>
         </div>
-        <div class="tl-content">
-          <div class="tl-label ${isPending?'pending':''}">${s.label}</div>
-          ${hist ? `<div class="tl-time">${hist.time}</div>` : ''}
-        </div>
-      </div>`;
-    });
 
-    area.innerHTML = `<div class="card result-card">
-      <div class="order-top">
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="senha-input" placeholder="Senha do setor" onkeydown="if(event.key==='Enter') fazerLogin()" />
+        </div>
+
+        <button class="btn btn-red btn-full" onclick="fazerLogin()">
+          <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Entrar
+        </button>
+
+        <div id="login-err" class="error-msg">Setor ou senha incorretos. Tente novamente.</div>
+
+        <div class="info-box">
+          <strong>Senhas dos setores:</strong>
+          Financeiro: <code>fin123</code> &nbsp;|&nbsp; Estoque: <code>est123</code><br>
+          Expedição: <code>exp123</code> &nbsp;|&nbsp; Entrega: <code>ent123</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Painel após login (oculto até fazer login) -->
+    <div id="painel-area" style="display:none;">
+
+      <!-- Cabeçalho do painel com setor e botão sair -->
+      <div class="panel-top">
         <div>
-          <div class="order-id-label">Número do pedido</div>
-          <div class="order-id-value">${data.id_pedido}</div>
-          <div class="order-client">${data.cliente}</div>
+          <div class="panel-title">Gerenciar Pedidos</div>
+          <div class="setor-badge" id="setor-nome"></div>
         </div>
-        <span class="badge badge-${Math.min(data.step,3)}">${STEPS[data.step].label}</span>
+        <button class="btn-logout" onclick="logout()">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sair
+        </button>
       </div>
-      <div class="timeline">${tl}</div>
-    </div>`;
-  }
 
-  function fazerLogin() {
-    const setor = document.getElementById('setor-select').value;
-    const senha = document.getElementById('senha-input').value;
-    const err = document.getElementById('login-err');
-    if (!setor || SENHAS[setor] !== senha) { err.style.display = 'block'; return; }
-    err.style.display = 'none';
-    currentSetor = setor;
-    document.getElementById('login-area').style.display = 'none';
-    document.getElementById('painel-area').style.display = 'block';
-    document.getElementById('setor-nome').textContent = 'Setor: ' + SETOR_NAMES[setor];
-    document.getElementById('header-info').textContent = SETOR_NAMES[setor];
-    carregarPedidos();
-  }
+      <!-- Campo para criar novo pedido -->
+      <div class="new-order-row">
+        <input type="text" id="novo-cliente" placeholder="Nome do cliente para novo pedido" onkeydown="if(event.key==='Enter') criarPedido()" />
+        <button class="btn btn-red" onclick="criarPedido()" id="btn-criar">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Pedido
+        </button>
+      </div>
 
-  function logout() {
-    currentSetor = null;
-    document.getElementById('login-area').style.display = 'block';
-    document.getElementById('painel-area').style.display = 'none';
-    document.getElementById('senha-input').value = '';
-    document.getElementById('setor-select').value = '';
-    document.getElementById('header-info').textContent = 'Sistema de Pedidos';
-  }
+      <!-- Lista de pedidos (preenchida pelo JavaScript) -->
+      <div id="orders-list" class="orders-list"></div>
 
-  async function criarPedido() {
-    const nome = document.getElementById('novo-cliente').value.trim();
-    if (!nome) return;
-    const btn = document.getElementById('btn-criar');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>';
-    const id = await gerarId();
-    const { error } = await db.from('pedidos').insert([{ id_pedido: id, cliente: nome, step: 0, history: [{ step: 0, time: agora() }] }]);
-    btn.disabled = false;
-    btn.innerHTML = `<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo pedido`;
-    if (!error) { document.getElementById('novo-cliente').value = ''; carregarPedidos(); }
-  }
+    </div>
+  </div>
 
-  async function atualizarStep(id) {
-    const sel = document.getElementById('sel-' + id);
-    const newStep = parseInt(sel.value);
-    const btn = document.getElementById('btn-' + id);
-    const { data: current } = await db.from('pedidos').select('*').eq('id_pedido', id).single();
-    if (!current) return;
-    const history = current.history || [];
-    if (!history.find(h => h.step === newStep)) history.push({ step: newStep, time: agora() });
-    btn.disabled = true;
-    btn.textContent = 'Salvando...';
-    const { error } = await db.from('pedidos').update({ step: newStep, history }).eq('id_pedido', id);
-    if (!error) {
-      btn.textContent = '✓ Salvo!';
-      btn.style.background = '#1b8a4e';
-      btn.style.color = '#fff';
-      setTimeout(() => carregarPedidos(), 1000);
-    } else {
-      btn.disabled = false;
-      btn.textContent = 'Atualizar';
+
+  <!-- ========== JAVASCRIPT ========== -->
+  <!-- Lógica principal do sistema -->
+  <script src="app.js"></script>
+
+  <!-- Registro do Service Worker para PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js');
+      });
     }
-  }
+  </script>
 
-  async function carregarPedidos() {
-    const el = document.getElementById('orders-list');
-    el.innerHTML = '<div class="loading"><span class="spinner"></span> Carregando pedidos...</div>';
-    const { data: orders, error } = await db.from('pedidos').select('*').order('created_at', { ascending: false });
-    if (error || !orders) { el.innerHTML = '<div class="empty-state">Erro ao carregar pedidos.</div>'; return; }
-    if (!orders.length) { el.innerHTML = '<div class="empty-state">Nenhum pedido cadastrado ainda.</div>'; return; }
-    el.innerHTML = orders.map(o => {
-      const opts = STEPS.map((s, i) => `<option value="${i}" ${o.step===i?'selected':''}>${s.label}</option>`).join('');
-      return `<div class="order-row">
-        <div class="order-info"><strong>${o.id_pedido}</strong><span>${o.cliente}</span></div>
-        <div class="order-actions">
-          <select class="step-select" id="sel-${o.id_pedido}">${opts}</select>
-          <button class="btn btn-dark btn-sm" id="btn-${o.id_pedido}" onclick="atualizarStep('${o.id_pedido}')">Atualizar</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js');
-    });
-  }
-</script>
 </body>
 </html>
