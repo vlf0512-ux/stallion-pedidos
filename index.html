@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stallion — Rastreamento de Pedidos</title>
-
+ 
   <!-- PWA: permite instalar como app no celular -->
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#111111" />
@@ -12,40 +12,35 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Stallion" />
-
+ 
   <!-- Fontes do Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-
+ 
   <!-- Estilos visuais do site -->
   <link rel="stylesheet" href="style.css" />
-
+ 
   <!-- Biblioteca do banco de dados Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
+ 
   <!-- ========== CABEÇALHO ========== -->
   <header>
     <div class="logo-area">
-      <!-- Logo cavalo em SVG (sem precisar de imagem externa) -->
-      <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#c0392b" d="M72,10 C65,8 58,12 54,18 C50,14 44,11 37,13 C28,15 22,23 24,32 C18,34 14,40 16,47 C10,50 8,57 12,63 C8,68 9,76 15,79 C14,85 18,91 25,92 C24,98 30,102 36,100 C40,106 48,107 53,103 C58,107 66,106 70,100 C76,102 82,98 81,92 C88,91 92,85 91,79 C97,76 98,68 94,63 C98,57 96,50 90,47 C92,40 88,34 82,32 C84,23 78,15 72,10 Z"/>
-        <path fill="#111" d="M50,25 C44,25 39,29 37,35 L35,45 C33,50 35,56 40,59 L40,75 C40,77 42,79 44,79 L56,79 C58,79 60,77 60,75 L60,59 C65,56 67,50 65,45 L63,35 C61,29 56,25 50,25 Z"/>
-        <circle fill="#fff" cx="44" cy="36" r="3"/>
-        <path fill="#c0392b" d="M38,30 C36,27 32,26 30,28 C32,30 34,33 36,34 Z"/>
-      </svg>
-
+      <!-- Logo oficial da Stallion -->
+      <img src="logo.png" class="logo-icon" alt="Stallion Logo" />
+ 
       <div class="logo-text">
         <span class="logo-name">STALLION</span>
         <span class="logo-sub">Moto Peças</span>
       </div>
     </div>
-
+ 
     <div class="header-tag" id="header-info">Sistema de Pedidos</div>
   </header>
-
-
+ 
+ 
   <!-- ========== ABAS DE NAVEGAÇÃO ========== -->
   <div class="tab-bar">
     <!-- Aba visível para o cliente -->
@@ -53,24 +48,24 @@
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       Rastrear Pedido
     </div>
-
+ 
     <!-- Aba restrita para funcionários -->
     <div class="tab" id="tab-btn-painel" onclick="showTab('painel')">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Painel Interno
     </div>
   </div>
-
-
+ 
+ 
   <!-- ========== ABA DO CLIENTE ========== -->
   <div id="tab-cliente" class="section active">
-
+ 
     <!-- Campo de busca -->
     <div class="card">
       <div class="card-eyebrow">Consulta de pedido</div>
       <div class="card-title">Acompanhe sua compra</div>
       <div class="card-sub">Digite o número do pedido recebido no momento da compra.</div>
-
+ 
       <div class="input-row">
         <input type="text" id="search-input" placeholder="Ex: STL-00000001" onkeydown="if(event.key==='Enter') buscarPedido()" />
         <button class="btn btn-red" onclick="buscarPedido()" id="btn-buscar">
@@ -78,28 +73,28 @@
           Buscar
         </button>
       </div>
-
+ 
       <div id="search-err" class="error-msg">
         Pedido não encontrado. Verifique o número e tente novamente.
       </div>
     </div>
-
+ 
     <!-- Resultado da busca (preenchido pelo JavaScript) -->
     <div id="result-area"></div>
-
+ 
   </div>
-
-
+ 
+ 
   <!-- ========== ABA DO PAINEL INTERNO ========== -->
   <div id="tab-painel" class="section">
-
+ 
     <!-- Tela de login (visível antes de entrar) -->
     <div id="login-area">
       <div class="card login-card">
         <div class="card-eyebrow">Acesso restrito</div>
         <div class="card-title">Painel Interno</div>
         <div class="card-sub">Selecione seu setor e insira a senha para acessar o painel.</div>
-
+ 
         <div class="field">
           <label>Setor</label>
           <select id="setor-select">
@@ -110,19 +105,19 @@
             <option value="entrega">Entrega</option>
           </select>
         </div>
-
+ 
         <div class="field">
           <label>Senha</label>
           <input type="password" id="senha-input" placeholder="Senha do setor" onkeydown="if(event.key==='Enter') fazerLogin()" />
         </div>
-
+ 
         <button class="btn btn-red btn-full" onclick="fazerLogin()">
           <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           Entrar
         </button>
-
+ 
         <div id="login-err" class="error-msg">Setor ou senha incorretos. Tente novamente.</div>
-
+ 
         <div class="info-box">
           <strong>Senhas dos setores:</strong>
           Financeiro: <code>fin123</code> &nbsp;|&nbsp; Estoque: <code>est123</code><br>
@@ -130,10 +125,10 @@
         </div>
       </div>
     </div>
-
+ 
     <!-- Painel após login (oculto até fazer login) -->
     <div id="painel-area" style="display:none;">
-
+ 
       <!-- Cabeçalho do painel com setor e botão sair -->
       <div class="panel-top">
         <div>
@@ -145,7 +140,7 @@
           Sair
         </button>
       </div>
-
+ 
       <!-- Campo para criar novo pedido -->
       <div class="new-order-row">
         <input type="text" id="novo-cliente" placeholder="Nome do cliente para novo pedido" onkeydown="if(event.key==='Enter') criarPedido()" />
@@ -154,18 +149,18 @@
           Novo Pedido
         </button>
       </div>
-
+ 
       <!-- Lista de pedidos (preenchida pelo JavaScript) -->
       <div id="orders-list" class="orders-list"></div>
-
+ 
     </div>
   </div>
-
-
+ 
+ 
   <!-- ========== JAVASCRIPT ========== -->
   <!-- Lógica principal do sistema -->
   <script src="app.js"></script>
-
+ 
   <!-- Registro do Service Worker para PWA -->
   <script>
     if ('serviceWorker' in navigator) {
@@ -174,6 +169,6 @@
       });
     }
   </script>
-
+ 
 </body>
 </html>
