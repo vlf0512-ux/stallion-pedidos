@@ -1,0 +1,669 @@
+/* ============================================================
+   STALLION — ESTILOS VISUAIS (style.css)
+   Organizado por seções:
+   1. Variáveis e Reset
+   2. Layout Base
+   3. Cabeçalho
+   4. Abas de Navegação
+   5. Cards
+   6. Formulários e Botões
+   7. Tela do Cliente (Busca + Timeline)
+   8. Tela do Painel Interno
+   9. Utilitários (loading, badges, erros)
+   10. Responsivo (celular)
+============================================================ */
+
+
+/* ============================================================
+   1. VARIÁVEIS E RESET
+============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Cores da marca Stallion */
+  --red:         #c0392b;
+  --red-dark:    #96281b;
+  --red-light:   #e74c3c;
+  --black:       #111111;
+  --black2:      #1a1a1a;
+  --black3:      #222222;
+  --black4:      #2e2e2e;
+  --white:       #ffffff;
+  --off-white:   #f5f5f5;
+
+  /* Escala de cinza */
+  --gray1:       #f0f0f0;
+  --gray2:       #e0e0e0;
+  --gray3:       #aaaaaa;
+  --gray4:       #777777;
+
+  /* Texto */
+  --text:        #111111;
+  --text-muted:  #666666;
+
+  /* Status */
+  --success:     #1b8a4e;
+  --success-bg:  #d4f0e0;
+  --info:        #1565c0;
+  --info-bg:     #ddeeff;
+  --warn:        #b45309;
+  --warn-bg:     #fef3cd;
+
+  /* Bordas arredondadas */
+  --radius:      8px;
+  --radius-sm:   5px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+
+/* ============================================================
+   2. LAYOUT BASE
+============================================================ */
+
+/* Cada aba é uma seção — só a ativa fica visível */
+.section {
+  display: none;
+  padding: 28px 20px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.section.active {
+  display: block;
+}
+
+
+/* ============================================================
+   3. CABEÇALHO
+============================================================ */
+header {
+  background: var(--black);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  /* Linha vermelha embaixo do header — identidade da marca */
+  border-bottom: 3px solid var(--red);
+}
+
+/* Agrupa ícone + texto do logo */
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.logo-sub {
+  font-size: 9px;
+  color: var(--red-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+/* Tag no canto direito do header (ex: "Financeiro") */
+.header-tag {
+  font-size: 11px;
+  color: var(--gray3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+
+/* ============================================================
+   4. ABAS DE NAVEGAÇÃO
+============================================================ */
+.tab-bar {
+  background: var(--black2);
+  display: flex;
+  border-bottom: 1px solid var(--black4);
+}
+
+.tab {
+  padding: 14px 24px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gray3);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.tab:hover { color: #ccc; }
+
+/* Aba selecionada fica branca com linha vermelha embaixo */
+.tab.active {
+  color: var(--white);
+  border-bottom-color: var(--red);
+}
+
+.tab svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* ============================================================
+   5. CARDS
+============================================================ */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--gray2);
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* Texto pequeno acima do título (ex: "Consulta de pedido") */
+.card-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 5px;
+}
+
+.card-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.card-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Card de login com largura máxima centralizada */
+.login-card {
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+
+/* ============================================================
+   6. FORMULÁRIOS E BOTÕES
+============================================================ */
+
+/* Campos de texto e selects */
+input, select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--gray2);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--red);
+  background: #fff;
+}
+
+input::placeholder { color: var(--gray3); }
+
+label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--gray4);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.field { margin-bottom: 16px; }
+
+/* Input + botão lado a lado */
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+.input-row input { flex: 1; }
+
+/* Base dos botões */
+.btn {
+  padding: 11px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Botão vermelho — ação principal */
+.btn-red { background: var(--red); color: var(--white); }
+.btn-red:hover:not(:disabled) { background: var(--red-dark); }
+
+/* Botão preto — ação secundária */
+.btn-dark { background: var(--black); color: var(--white); }
+.btn-dark:hover:not(:disabled) { background: var(--black3); }
+
+/* Modificadores */
+.btn-full { width: 100%; justify-content: center; }
+.btn-sm   { padding: 8px 14px; font-size: 11px; }
+
+.btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* ============================================================
+   7. TELA DO CLIENTE — BUSCA E TIMELINE
+============================================================ */
+
+/* Card de resultado aparece logo abaixo do campo de busca */
+.result-card { margin-top: 16px; }
+
+/* Linha superior do resultado: ID do pedido + badge de status */
+.order-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.order-id-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+.order-id-value {
+  font-family: 'Oswald', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--black);
+  letter-spacing: 1px;
+}
+
+.order-client {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* Badges de status coloridos por etapa */
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-0 { background: var(--warn-bg);    color: var(--warn);    }
+.badge-1 { background: var(--info-bg);    color: var(--info);    }
+.badge-2 { background: #e8f4fe;           color: #1565c0;        }
+.badge-3 { background: var(--success-bg); color: var(--success); }
+
+/* Timeline de etapas */
+.timeline {
+  border-top: 1px solid var(--gray2);
+  padding-top: 20px;
+}
+
+.tl-item {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 20px;
+}
+.tl-item:last-child { padding-bottom: 0; }
+
+/* Coluna da esquerda: círculo + linha vertical */
+.tl-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Círculo da etapa */
+.tl-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tl-dot svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Etapa concluída: círculo preto com ícone vermelho */
+.tl-dot.done    { background: var(--black); color: var(--red-light); }
+/* Etapa atual: círculo vermelho com ícone branco */
+.tl-dot.current { background: var(--red);   color: var(--white);     }
+/* Etapa futura: círculo cinza */
+.tl-dot.pending { background: var(--gray1); color: var(--gray3);     }
+
+/* Linha vertical entre as etapas */
+.tl-line {
+  width: 2px;
+  flex: 1;
+  min-height: 14px;
+  background: var(--gray2);
+  margin-top: 5px;
+}
+/* Linha vermelha para etapas já concluídas */
+.tl-line.done { background: var(--red); }
+
+/* Coluna da direita: texto da etapa e horário */
+.tl-content { padding-top: 7px; }
+
+.tl-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.tl-label.pending {
+  font-weight: 400;
+  color: var(--gray3);
+}
+
+.tl-time {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+
+/* ============================================================
+   8. TELA DO PAINEL INTERNO
+============================================================ */
+
+/* Cabeçalho do painel: título + botão sair */
+.panel-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.panel-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+
+/* Badge que mostra o setor logado */
+.setor-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  background: var(--black);
+  color: var(--white);
+  border-radius: 20px;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+/* Botão discreto de sair */
+.btn-logout {
+  background: none;
+  border: 1.5px solid var(--gray2);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+.btn-logout:hover { background: var(--gray1); }
+.btn-logout svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Linha de criar novo pedido */
+.new-order-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.new-order-row input { flex: 1; }
+
+/* Lista de pedidos */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Card de cada pedido */
+.order-row {
+  background: var(--white);
+  border: 1px solid var(--gray2);
+  border-left: 4px solid var(--red);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.order-info strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.order-info span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Select de status dentro do card */
+.step-select {
+  width: auto;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+
+/* ============================================================
+   9. UTILITÁRIOS
+============================================================ */
+
+/* Mensagem de erro (fica oculta por padrão) */
+.error-msg {
+  font-size: 13px;
+  color: var(--red);
+  margin-top: 10px;
+  display: none;
+  padding: 10px 14px;
+  background: #fdecea;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--red);
+}
+
+/* Caixa informativa (ex: senhas de teste) */
+.info-box {
+  background: #f8f8f8;
+  border: 1px solid var(--gray2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--gray4);
+  margin-top: 16px;
+  line-height: 1.8;
+}
+.info-box strong { display: block; margin-bottom: 4px; color: var(--text); }
+
+code {
+  background: var(--gray1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: var(--red);
+}
+
+/* Loading com spinner giratório */
+.loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--gray2);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Estado vazio da lista de pedidos */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+
+/* ============================================================
+   10. RESPONSIVO — CELULAR (até 480px)
+============================================================ */
+@media (max-width: 480px) {
+  .section { padding: 20px 14px; }
+
+  /* No celular, as ações do pedido ficam em coluna */
+  .order-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-actions {
+    width: 100%;
+  }
+
+  .step-select { flex: 1; }
+}
